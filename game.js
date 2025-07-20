@@ -37,6 +37,21 @@ class Player {
         if (this.keys.right && this.x + this.radius < canvas.width) {
             this.x += this.speed;
         }
+
+        // Prevent player from going out of bounds
+        if (this.y - this.radius < 0) {
+            this.y = this.radius;
+        }
+        if (this.y + this.radius > canvas.height) {
+            this.y = canvas.height - this.radius;
+        }
+        if (this.x - this.radius < 0) {
+            this.x = this.radius;
+        }
+        if (this.x + this.radius > canvas.width) {
+            this.x = canvas.width - this.radius;
+        }
+
         this.draw();
     }
 }
@@ -110,9 +125,32 @@ class Asteroid {
     }
 }
 
+class Perk {
+    constructor(x, y, radius, color, type) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = color;
+        this.type = type;
+    }
+
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+    }
+
+    update() {
+        this.y += 2;
+        this.draw();
+    }
+}
+
 let projectiles = [];
 let enemies = [];
 let asteroids = [];
+let perks = [];
 let score = 0;
 let gameOver = false;
 
@@ -187,7 +225,15 @@ function gameLoop() {
 
     enemies.forEach((enemy, eIndex) => {
         if (detectCollision(player, enemy)) {
-            gameOver = true;
+            if (player.shield) {
+                player.shield = false;
+                player.color = 'white';
+                setTimeout(() => {
+                    enemies.splice(eIndex, 1);
+                }, 0);
+            } else {
+                gameOver = true;
+            }
         }
     });
 
@@ -195,13 +241,47 @@ function gameLoop() {
         asteroid.update();
 
         if (detectCollision(player, asteroid)) {
-            gameOver = true;
+            if (player.shield) {
+                player.shield = false;
+                player.color = 'white';
+                setTimeout(() => {
+                    asteroids.splice(aIndex, 1);
+                }, 0);
+            } else {
+                gameOver = true;
+            }
         }
 
         // Remove asteroids that are off screen
         if (asteroid.y > canvas.height + asteroid.radius) {
             setTimeout(() => {
                 asteroids.splice(aIndex, 1);
+            }, 0);
+        }
+    });
+
+    perks.forEach((perk, index) => {
+        perk.update();
+
+        if (detectCollision(player, perk)) {
+            if (perk.type === 'shield') {
+                player.shield = true;
+                player.color = 'blue';
+            } else if (perk.type === 'speed') {
+                player.speed = 10;
+                setTimeout(() => {
+                    player.speed = 5;
+                }, 3000);
+            }
+            setTimeout(() => {
+                perks.splice(index, 1);
+            }, 0);
+        }
+
+        // Remove perks that are off screen
+        if (perk.y > canvas.height + perk.radius) {
+            setTimeout(() => {
+                perks.splice(index, 1);
             }, 0);
         }
     });
@@ -240,6 +320,17 @@ function spawnAsteroids() {
         };
         asteroids.push(new Asteroid(x, y, radius, color, velocity));
     }, 1500);
+}
+
+function spawnPerks() {
+    setInterval(() => {
+        const radius = 10;
+        const x = Math.random() * (canvas.width - radius * 2) + radius;
+        const y = -radius;
+        const perkType = Math.random() < 0.5 ? 'shield' : 'speed';
+        const color = perkType === 'shield' ? 'blue' : 'green';
+        perks.push(new Perk(x, y, radius, color, perkType));
+    }, 5000);
 }
 
 // Initialize player
@@ -302,7 +393,25 @@ window.addEventListener('keyup', (e) => {
     }
 });
 
+function restartGame() {
+    // Reset game variables
+    player = new Player(canvas.width / 2, canvas.height - 30, 20, 'white');
+    projectiles = [];
+    enemies = [];
+    asteroids = [];
+    score = 0;
+    gameOver = false;
+
+    // Restart the game loop
+    gameLoop();
+}
+
+// Restart button event listener
+const restartButton = document.getElementById('restartButton');
+restartButton.addEventListener('click', restartGame);
+
 // Start the game loop
 gameLoop();
 spawnEnemies();
 spawnAsteroids();
+spawnPerks();
