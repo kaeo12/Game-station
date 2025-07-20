@@ -2,6 +2,11 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Game variables
+const playerImage = new Image();
+playerImage.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAAAAACPAi4CAAAAB3RJTUUH4goWFRoIAUT+VAAAAAlwSFlzAAAewQAAHsEBw2lUUwAAAARnQU1BAACxjwv8YQUAAACVSURBVHja7dWxCQAgDAVRR8u/abp3KY2QINU2hbH/l3wDMMg2g20G2wy2GWwz2GawzWA/sJ/Yj+xH9iP7gf2E/cR+ZD+yH9mP7Ef2Y/sx/Zj+zH5mP7M/2c/s5/YT+wn7if3EfuJ+Yj+xH9mP7Ef2I/uR/cx+Zj+zH9mP7M/2Z/sz/Zn+zP5mf7M/2Z/sT/Yn+xP9i//5/gH5A7oZfJ46/AAAAABJRU5ErkJggg==';
+const asteroidImage = new Image();
+asteroidImage.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAAAAACPAi4CAAAAB3RJTUUH4goWFRwIADXOGQAAAAlwSFlzAAAewQAAHsEBw2lUUwAAAARnQU1BAACxjwv8YQUAAACRSURBVHja7dWxDQAgDANRR8u/abp3C40QINU2hbH/l3wDMMg2g20G2wy2GWwz2GawzWA/sJ/Yj+xH9iP7gf2E/cR+ZD+yH9mP7Ef2Y/sx/Zj+zH5mP7M/2c/s5/YT+wn7if3EfuJ+Yj+xH9mP7Ef2I/uR/cx+Zj+zH9mP7M/2Z/sz/Zn+zP5mf7M/2Z/sT/Yn+xP9i//5/gH5A7oZfJ46/AAAAABJRU5ErkJggg==';
+
 class Player {
     constructor(x, y, radius, color) {
         this.x = x;
@@ -18,10 +23,7 @@ class Player {
     }
 
     draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        ctx.fillStyle = this.color;
-        ctx.fill();
+        ctx.drawImage(playerImage, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
     }
 
     update() {
@@ -67,10 +69,7 @@ class Projectile {
     }
 
     draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        ctx.fillStyle = this.color;
-        ctx.fill();
+        ctx.drawImage(asteroidImage, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
     }
 
     update() {
