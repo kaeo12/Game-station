@@ -24,3 +24,22 @@ canvas {
     border: 2px solid #fff;
     box-shadow: 0 0 20px #fff;
 }
+
+#restartButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    background-color: #fff;
+    color: #000;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 0 10px #fff;
+    transition: all 0.2s ease-in-out;
+}
+
+#restartButton:hover {
+    background-color: #000;
+    color: #fff;
+}
